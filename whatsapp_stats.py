@@ -3,6 +3,8 @@ import os.path
 
 filename = '_chat.txt'
 
+# Comma-separated list of old_name,new_name
+# One rename per line, no quotes needed
 rename_list_file = 'rename_list.txt'
 rename = {}
 if os.path.isfile(rename_list_file):
@@ -11,6 +13,7 @@ if os.path.isfile(rename_list_file):
     if rename_list:
       rename = {names[0]: names[1] for names in rename_list}
 
+# Group chat titles should be one title per line, no quotes needed
 title_file_list = 'titles.txt'
 titles = []
 if os.path.isfile(title_file_list):
