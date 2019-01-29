@@ -4,7 +4,6 @@ import os.path
 filename = '_chat.txt'
 
 rename_list_file = 'rename_list.txt'
-
 rename = {}
 if os.path.isfile(rename_list_file):
   with open(rename_list_file, 'r') as f:
@@ -33,7 +32,7 @@ def separate_data(raw_lines):
         pos = line.find(']')
         pub_time = datetime.strptime(line[1:pos], '%m/%d/%y, %H:%M:%S')
         text = line[pos+2:]
-        if len(text.split(':', maxsplit=1)) == 2:
+        if len(text.split(': ', maxsplit=1)) == 2:
           author, message = text.split(': ', maxsplit=1)
           if author in rename:
             author = rename[author]
