@@ -47,8 +47,6 @@ def separate_data(raw_lines):
           message = ' '.join(text.split()[2:])
           if author in rename:
             author = rename[author]
-          if author in titles:
-            continue
         
         separated_lines.append([pub_time, author, message])
       else:                       # line break-continued from previous message
