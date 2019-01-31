@@ -13,13 +13,6 @@ if os.path.isfile(rename_list_file):
     if rename_list:
       rename = {names[0]: names[1] for names in rename_list}
 
-# Group chat titles should be one title per line, no quotes needed
-title_file_list = 'titles.txt'
-titles = []
-if os.path.isfile(title_file_list):
-  with open(title_file_list, 'r') as f:
-    titles = f.read().splitlines()
-
 def load_data(filename):
   with open(filename, 'r') as f:
     lines = [i.replace('\u200e','') for i in f.read().splitlines()]
@@ -39,7 +32,7 @@ def separate_data(raw_lines):
           author, message = text.split(': ', maxsplit=1)
           if author in rename:
             author = rename[author]
-          if author in titles:
+          if message == 'Messages to this group are now secured with end-to-end encryption.':
             continue
 
         else:                     # someone did an action
