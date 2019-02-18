@@ -1,5 +1,8 @@
 from datetime import datetime
 import os.path
+import emoji
+import regex
+from collections import defaultdict
 
 filename = '_chat.txt'
 
@@ -61,6 +64,8 @@ def calculate_stats(cleaned_data, authors):
   gifs = dict.fromkeys(authors, 0)
   images = dict.fromkeys(authors, 0)
   liked = dict.fromkeys(authors, 0)
+  emojis = defaultdict(int)
+  emoji_authors = dict.fromkeys(authors, 0)
 
   for pub_time, author, message in cleaned_data:
     num_messages[author] += 1
@@ -72,6 +77,12 @@ def calculate_stats(cleaned_data, authors):
       images[author] += 1
     elif message.startswith('Liked'):
       liked[author] += 1
+    
+    data = regex.findall(r'\X', message)
+    for word in data:
+      if any(char in emoji.UNICODE_EMOJI for char in word):
+        emojis[word] += 1
+        emoji_authors[author] += 1
   
   print('Number of Messages Sent')
   print('Name\tNumber of Messages Sent')
@@ -119,6 +130,23 @@ def calculate_stats(cleaned_data, authors):
   #   print(author,'\t',liked[author])
   # print()
 
+  print('Emojis')
+  print('Emoji\tCount')
+  for e in emojis:
+    print(e,'\t',emojis[e])
+  print()
+
+  print('Number of Emojis Sent')
+  print('Name\tNumber of Emojis Sent')
+  for author in emoji_authors:
+    print(author,'\t',emoji_authors[author])
+  print()
+
+  print('Percentage of emojis')
+  print('Name\t%Emojis')
+  for author in emoji_authors:
+    print(author,'\t',round(emoji_authors[author]/num_chars[author],6))
+  print()
 
 cleaned_data = separate_data(load_data(filename))
 authors = get_author_list(cleaned_data)
