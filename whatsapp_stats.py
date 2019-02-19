@@ -4,6 +4,7 @@ import emoji
 import regex
 from collections import defaultdict
 import argparse
+from gooey import Gooey, GooeyParser
 
 def generate_stats(whatsapp_export_filename):
   # Comma-separated list of old_name,new_name
@@ -153,11 +154,16 @@ def generate_stats(whatsapp_export_filename):
   calculate_stats(cleaned_data, authors)
 
 
-if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='Generate and print stats from a Whatsapp Chat Export.')
-  parser.add_argument('chat_filename', type=str, help='Name of the whatsapp chat export file.')
+@Gooey
+def main():
+  parser = GooeyParser(description='Generate and print stats from a Whatsapp Chat Export.')
+  parser.add_argument('chat_filename', widget='FileChooser', type=str, help='Name of the whatsapp chat export file.')
   # parser.add_argument('-v', '--verbose', action='store_true', help='Display troubleshooting info.')
 
   args = parser.parse_args()
 
   generate_stats(args.chat_filename)
+
+
+if __name__ == '__main__':
+  main()
