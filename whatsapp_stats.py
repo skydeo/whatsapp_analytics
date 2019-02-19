@@ -3,7 +3,6 @@ import os.path
 import emoji
 import regex
 from collections import defaultdict
-import argparse
 from gooey import Gooey, GooeyParser
 
 def generate_stats(whatsapp_export_filename):
