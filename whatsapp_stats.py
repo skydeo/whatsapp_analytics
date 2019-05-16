@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os.path
 import emoji
 import regex
 from collections import defaultdict
+import math
 
 filename = '_chat.txt'
 
@@ -67,10 +68,18 @@ def calculate_stats(cleaned_data, authors):
   emojis = defaultdict(int)
   emoji_authors = dict.fromkeys(authors, 0)
 
+  min_date = cleaned_data[0][0].date()
+  max_date = cleaned_data[-1][0].date()
+  delta = (max_date - min_date) + timedelta(days=1)
+  dates = {min_date+timedelta(d):0 for d in range(0,delta.days)}
+  # weeks = {min_date+7*timedelta(d):0 for d in range(0,math.floor(delta.days/7))}
+  # todo: write a bin_week or something function that will return which week a date 'belongs' to
+
   for pub_time, author, message in cleaned_data:
     num_messages[author] += 1
     num_chars[author] += len(message)
     hours[pub_time.hour] += 1
+    dates[pub_time.date()] += 1
     if message == 'GIF omitted':
       gifs[author] += 1
     elif message == 'image omitted':
@@ -147,6 +156,13 @@ def calculate_stats(cleaned_data, authors):
   for author in emoji_authors:
     print(author,'\t',round(emoji_authors[author]/num_chars[author],6))
   print()
+
+  print('Messages per day')
+  print('Day\t# of messages')
+  for date in dates:
+    print(date,'\t',dates[date])
+  print()
+
 
 cleaned_data = separate_data(load_data(filename))
 authors = get_author_list(cleaned_data)
