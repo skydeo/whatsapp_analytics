@@ -55,7 +55,6 @@ def get_author_list(cleaned_data):
   authors = set()
   for _, author, _ in cleaned_data:
     authors.add(author)
-  
   return sorted(authors)
 
 def calculate_stats(cleaned_data, authors):
@@ -67,11 +66,13 @@ def calculate_stats(cleaned_data, authors):
   liked = dict.fromkeys(authors, 0)
   emojis = defaultdict(int)
   emoji_authors = dict.fromkeys(authors, 0)
+  last_sent = dict.fromkeys(authors, cleaned_data[0][0])
 
   min_date = cleaned_data[0][0].date()
   max_date = cleaned_data[-1][0].date()
   delta = (max_date - min_date) + timedelta(days=1)
   dates = {min_date+timedelta(d):0 for d in range(0,delta.days)}
+  
   # weeks = {min_date+7*timedelta(d):0 for d in range(0,math.floor(delta.days/7))}
   # todo: write a bin_week or something function that will return which week a date 'belongs' to
 
@@ -80,6 +81,8 @@ def calculate_stats(cleaned_data, authors):
     num_chars[author] += len(message)
     hours[pub_time.hour] += 1
     dates[pub_time.date()] += 1
+    if pub_time > last_sent[author]:
+      last_sent[author] = pub_time
     if message == 'GIF omitted':
       gifs[author] += 1
     elif message == 'image omitted':
@@ -162,6 +165,13 @@ def calculate_stats(cleaned_data, authors):
   for date in dates:
     print(date,'\t',dates[date])
   print()
+
+  print('Last message sent')
+  print('Name\tLast message send time')
+  for author in last_sent:
+    print(author,'\t',last_sent[author])
+  print()
+  print(last_sent)
 
 
 cleaned_data = separate_data(load_data(filename))
