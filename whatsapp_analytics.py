@@ -5,6 +5,7 @@ import regex
 from collections import defaultdict
 import math
 
+
 filename = '_chat.txt'
 
 # Comma-separated list of old_name,new_name
@@ -17,11 +18,12 @@ if os.path.isfile(rename_list_file):
     if rename_list:
       rename = {names[0]: names[1] for names in rename_list}
 
+
 def load_data(filename):
   with open(filename, 'r') as f:
-    lines = [i.replace('\u200e','') for i in f.read().splitlines()]
-  
+    lines = [i.replace('\u200e','') for i in f.read().splitlines()]  
   return lines
+
 
 def separate_data(raw_lines):
   separated_lines = []
@@ -40,6 +42,7 @@ def separate_data(raw_lines):
             continue
 
         else:                     # someone did an action
+          # TODO: split on keywords: ['created', 'added', 'changed']
           author = ' '.join(text.split()[:2])
           message = ' '.join(text.split()[2:])
           if author in rename:
@@ -51,11 +54,13 @@ def separate_data(raw_lines):
 
   return separated_lines
 
+
 def get_author_list(cleaned_data):
   authors = set()
   for _, author, _ in cleaned_data:
     authors.add(author)
   return sorted(authors)
+
 
 def calculate_stats(cleaned_data, authors):
   num_messages = dict.fromkeys(authors, 0)
@@ -71,7 +76,7 @@ def calculate_stats(cleaned_data, authors):
   min_date = cleaned_data[0][0].date()
   max_date = cleaned_data[-1][0].date()
   delta = (max_date - min_date) + timedelta(days=1)
-  dates = {min_date+timedelta(d):0 for d in range(0,delta.days)}
+  dates = {min_date+timedelta(d): 0 for d in range(0,delta.days)}
   
   # weeks = {min_date+7*timedelta(d):0 for d in range(0,math.floor(delta.days/7))}
   # todo: write a bin_week or something function that will return which week a date 'belongs' to
@@ -164,14 +169,27 @@ def calculate_stats(cleaned_data, authors):
   print('Day\t# of messages')
   for date in dates:
     print(date,'\t',dates[date])
+
+  min_sent = min(dates.values())
+  max_sent = max(dates.values())
+
+  min_sent_dates = [date for date in dates if dates[date] == min_sent]
+  max_sent_dates = [date for date in dates if dates[date] == max_sent]
+
+
+  print(f'The most messages sent in a day was {max_sent}:')
+  for msd in sorted(max_sent_dates):
+    print(f'\t{msd}')
+  print(f'The least messages sent in a day was {min_sent}:')
+  for msd in sorted(min_sent_dates):
+    print(f'\t{msd}')
   print()
 
   print('Last message sent')
-  print('Name\tLast message send time')
-  for author in last_sent:
-    print(author,'\t',last_sent[author])
+  print('Name\tLast message sent')
+  for author, date in sorted(last_sent.items(), key=lambda x: x[1]):
+    print(author,'\t',date)
   print()
-  print(last_sent)
 
 
 cleaned_data = separate_data(load_data(filename))
